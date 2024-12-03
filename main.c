@@ -18,5 +18,6 @@ int main(){
 	sleep(3);
 	system("clear");
 	printf("%s",logo);
+	printf("%s",rfile("main.c"));
     return 0;
 }

@@ -19,20 +19,45 @@ int  usrh(){
 }
 
 void wnfile(char drec[], char cont[]){
-    FILE *filerw;
-    filerw = fopen(drec,"w");
-    if(filerw == NULL){
+    FILE *fptr;
+    fptr = fopen(drec,"w");
+    if(fptr == NULL){
         perror("error opening file");
         return;
     }
-    fprintf(filerw,cont);
-    fclose(filerw);
+    fprintf(fptr,cont);
+    fclose(fptr);
 }
 
-char rfile(char drec[]){
-    FILE *filer;
-    filer = fopen(drec,"r");
-    char op[999999];
-    fgets(op,999999,filer);
-    fclose(filer);
+char *rfile(const char drec[]) {
+    FILE *fptr = fopen(drec, "r");
+    if (fptr == NULL) {
+        perror("Error opening file");
+        return NULL;
+    }
+
+    char *otpt = malloc(32767 * sizeof(char));
+    if (otpt == NULL) {
+        perror("Memory allocation failed");
+        fclose(fptr);
+        return NULL;
+    }
+
+    size_t length = 0;
+    char line[32767]; 
+
+    while (fgets(line, sizeof(line), fptr)) {
+        size_t line_len = strlen(line);
+        if (length + line_len >= 32767) {
+            fprintf(stderr, "File too large to fit in buffer\n");
+            free(otpt);
+            fclose(fptr);
+            return NULL;
+        }
+        strcpy(otpt + length, line);
+        length += line_len;
+    }
+
+    fclose(fptr);
+    return otpt; 
 }
